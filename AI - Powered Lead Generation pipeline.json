@@ -1,0 +1,342 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formId": "obdYdO"
+      },
+      "type": "n8n-nodes-tallyforms.tallyTrigger",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "daa8267c-aa8c-4d7a-b3fa-d16394228d8b",
+      "name": "Tally Trigger",
+      "webhookId": "7a6a808a-3190-41b4-ab37-e5a509858a59",
+      "credentials": {
+        "tallyApi": {
+          "id": "Qsqkz9tyVjXGQMBd",
+          "name": "Tally account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a B2B sales research assistant.\n\nA new lead has just signed up:\n- Name: {{ $json.name }}\n- Role: {{ $json.role }}\n- Company: {{ $json.company }}\n\nDo two things:\n1. Write a 2-sentence summary of what {{ $json.company }} likely does based on the role and company name.\n2. Suggest one specific, personalized outreach angle for a sales rep to use when contacting {{ $json.name }}.\n\nRespond in this exact JSON format:\n{\n  \"summary\": \"...\",\n  \"outreach_angle\": \"...\"\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "07425a34-496d-4ae8-9254-e258d0a161d3",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tkzLEMspzLHcaRwo",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.content.parts[0].text;\nconst cleaned = raw.replace(/```json|```/g, '').trim();\nconst parsed = JSON.parse(cleaned);\n\nreturn [{\n  json: {\n    summary: parsed.summary,\n    outreach_angle: parsed.outreach_angle\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        144
+      ],
+      "id": "a70af3c6-158e-492c-8cae-808afcfbfc3c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appTVgGHS7BwAlSyl",
+          "mode": "list",
+          "cachedResultName": "Lead Pipeline",
+          "cachedResultUrl": "https://airtable.com/appTVgGHS7BwAlSyl"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblafRMGPayRRc8wz",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://airtable.com/appTVgGHS7BwAlSyl/tblafRMGPayRRc8wz"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AI Summary",
+              "displayName": "AI Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Outreach Angle",
+              "displayName": "Outreach Angle",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date Added",
+              "displayName": "Date Added",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        144
+      ],
+      "id": "23d5e38f-081f-43ae-b8ad-2f481e02c492",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "PalZfauE81vvUUTr",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AQW7RES11",
+          "mode": "list",
+          "cachedResultName": "new-channel"
+        },
+        "text": "=*Name:* {{ $('Edit Fields').item.json.name }}\n*Role:* {{ $('Edit Fields').item.json.role }}\n*Company:* {{ $('Edit Fields').item.json.company }}\n\n*AI Summary:* {{ $('Code in JavaScript').item.json.summary }}\n*Outreach Angle:* {{ $('Code in JavaScript').item.json.outreach_angle }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        1280,
+        144
+      ],
+      "id": "58206ccc-928c-44f1-941f-f4d1d6d55e73",
+      "name": "Send a message",
+      "webhookId": "7a707040-3586-429c-ba02-0a6db6526455",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "0sxfiDzwkcDjjARN",
+          "name": "Slack OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a4a8c467-c56c-4bd2-a96a-4cdd99be0269",
+              "name": "name",
+              "value": "={{ $json.question_Qr0GDX.value + ' ' + $json.question_91leW5.value }}",
+              "type": "string"
+            },
+            {
+              "id": "e05b6e7b-5d0e-4320-8537-1b74f0f77c85",
+              "name": "email",
+              "value": "={{ $json.question_eAEb6l.value }}",
+              "type": "string"
+            },
+            {
+              "id": "a98dd5d6-1fe5-46d3-aaba-1f5a5795d640",
+              "name": "role",
+              "value": "={{ $json.question_Wo04Nk.value }}",
+              "type": "string"
+            },
+            {
+              "id": "250cf1b2-215c-42b7-8fda-0fdee9dee65b",
+              "name": "company",
+              "value": "={{ $json.question_axGW6X.value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "3ead985c-81e8-4df0-b989-41d9741ea266",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Tally Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2a6ab222-4ef3-4f30-b7e7-f5d917ee9001",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8b656f2ad48c4c35ae140cde24b1c438f4eb464e17310399d51fc2b7b4d5e9d4"
+  },
+  "id": "9y2XKhTj9EB6jNOw",
+  "tags": []
+}
